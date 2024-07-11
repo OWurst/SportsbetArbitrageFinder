@@ -25,6 +25,10 @@ def get_bookmakers_request(api_token, sport, region):
     try:
         response = requests.get(url.format(sport=sport), params=params)
 
+        # if response code is unauthorized throw an error
+        if response.status_code == 401:
+            raise Exception("Unauthorized API key")
+
         bookies = set()
 
         for data in response.json():
@@ -35,5 +39,4 @@ def get_bookmakers_request(api_token, sport, region):
         return bookies
     
     except Exception as e:
-        print(f"Error: {e}")
-        return set()
+        raise e

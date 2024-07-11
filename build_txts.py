@@ -1,6 +1,17 @@
 import app_functions.data_manipulation as dm
 import app_functions.requests as req
 
+def write_bookmakers_to_txt(bookmakers, error=False):
+    # write bookmakers to bookmakers.txt
+    with open("bookies.txt", "w") as f:
+        for bookmaker in bookmakers:
+            f.write(bookmaker + "\n")
+    
+    if error:
+        print(f"Error occurred, incomplete bookmakers list written to bookies.txt")    
+    else:
+        print(f"Bookmakers list written to bookies.txt")
+
 if __name__ == "__main__":
     api_token = dm.read_config(build=True)
 
@@ -30,17 +41,13 @@ if __name__ == "__main__":
     bookmakers = set()
     for sport in sports:
         for region in regions:
-            new_bookmakers = req.get_bookmakers_request(api_token, sport, region)
-
-            # combine old and new bookmakers
-            bookmakers = bookmakers.union(new_bookmakers)
-
-        # combine old and new bookmakers
-        bookmakers = bookmakers.union(new_bookmakers)
-
-    # write bookmakers to bookmakers.txt
-    with open("bookies.txt", "w") as f:
-        for bookmaker in bookmakers:
-            f.write(bookmaker + "\n")
-        
-    print(f"Bookmakers for {sport} written to bookies.txt")
+            try:
+                new_bookmakers = req.get_bookmakers_request(api_token, sport, region)
+                # combine old and new bookmakers
+                bookmakers = bookmakers.union(new_bookmakers)
+            except Exception as e:
+                print(f"Error: {e}, quitting...")
+                write_bookmakers_to_txt(bookmakers, error=True)
+                exit()
+    
+    write_bookmakers_to_txt(bookmakers)
