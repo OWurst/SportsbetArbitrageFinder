@@ -14,11 +14,11 @@ def get_sports_request(api_token):
 
     return sports
 
-def get_bookmakers_request(api_token, sport, regions):
+def get_bookmakers_request(api_token, sport, region):
     url = "https://api.the-odds-api.com/v4/sports/{sport}/odds"
     params = {
         "api_key": api_token,
-        "regions": regions,
+        "regions": region,
         "oddsFormat": "american"
     }
 

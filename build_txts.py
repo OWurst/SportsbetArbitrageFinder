@@ -23,27 +23,24 @@ if __name__ == "__main__":
     
     print("Sports written to sports.txt")
 
-    # get list of regions
-    regions = input("Enter regions separated by commas: ")
-    regions = [region.strip() for region in regions.split(",")]
+    # list of current regions
+    regions = ["eu", "us", "uk", "au", "us2"]
 
     # get bookmakers
+    bookmakers = set()
     for sport in sports:
-        bookmakers = req.get_bookmakers_request(api_token, sport, regions)
+        for region in regions:
+            new_bookmakers = req.get_bookmakers_request(api_token, sport, region)
 
-        # try to read bookies.txt
-        try:
-            with open("bookies.txt", "r") as f:
-                old_bookmakers = set(f.read().splitlines())
-        except FileNotFoundError:
-            old_bookmakers = set()
+            # combine old and new bookmakers
+            bookmakers = bookmakers.union(new_bookmakers)
 
         # combine old and new bookmakers
-        bookmakers = old_bookmakers.union(bookmakers)
+        bookmakers = bookmakers.union(new_bookmakers)
 
-        # write bookmakers to bookmakers.txt
-        with open("bookies.txt", "w") as f:
-            for bookmaker in bookmakers:
-                f.write(bookmaker + "\n")
+    # write bookmakers to bookmakers.txt
+    with open("bookies.txt", "w") as f:
+        for bookmaker in bookmakers:
+            f.write(bookmaker + "\n")
         
-        print(f"Bookmakers for {sport} written to bookies.txt")
+    print(f"Bookmakers for {sport} written to bookies.txt")
