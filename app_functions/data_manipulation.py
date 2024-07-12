@@ -21,6 +21,7 @@ def read_config(build=False):
     # list of sports is exhaustive and will exhaust api limit, user must specify sports
     try:
         sports = config["sports"]
+
     except KeyError:
         print("Sports list not found in config file. Please add a 'sports' field.")
         exit(1)
