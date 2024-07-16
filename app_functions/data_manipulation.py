@@ -1,4 +1,5 @@
 import yaml
+import pandas as pd
 
 def read_config(build=False):
     # Load config file
@@ -36,4 +37,57 @@ def read_config(build=False):
         "bookmakers": bookmakers
     }
     return config
-    
+
+def json_to_df(json_data):
+    # create df with columns
+    df = pd.DataFrame(columns=["sport", "bookmaker", "bet type", "event date", "favorite", "underdog", "odds favorite", "odds underdog"])
+
+    for set in json_data:
+        for event in set:
+            # get sport
+            sport = event["sport_title"]
+            bookmakers = event["bookmakers"]
+            date = event["commence_time"].split("T")[0]
+            
+            for bookmaker in bookmakers:
+                bookie = bookmaker["key"]
+                markets = bookmaker["markets"]
+
+                for market in markets:
+                    bet_type = market["key"]
+                    outcomes = market["outcomes"]
+                    
+                    # will only consider bets with 2 outcomes
+                    if len(outcomes) == 2:
+                        outcome1 = outcomes[0]
+                        outcome2 = outcomes[1]
+
+                        outcomeOdds1 = outcome1["price"]
+                        outcomeOdds2 = outcome2["price"]
+
+                        # determine favorite and underdog
+                        if outcomeOdds1 < outcomeOdds2:
+                            favorite = outcome1["name"]
+                            underdog = outcome2["name"]
+                            odds_favorite = outcomeOdds1
+                            odds_underdog = outcomeOdds2
+                        else:
+                            favorite = outcome2["name"]
+                            underdog = outcome1["name"]
+                            odds_favorite = outcomeOdds2
+                            odds_underdog = outcomeOdds1
+                        
+                        # append to df
+                        new_index = len(df)
+                        df.loc[new_index] = {
+                            "sport": sport,
+                            "bookmaker": bookie,
+                            "bet type": bet_type,
+                            "event date": date,
+                            "favorite": favorite,
+                            "underdog": underdog,
+                            "odds favorite": odds_favorite,
+                            "odds underdog": odds_underdog
+                        }
+
+        return df   
