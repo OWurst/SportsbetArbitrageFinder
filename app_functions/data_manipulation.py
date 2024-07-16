@@ -40,7 +40,7 @@ def read_config(build=False):
 
 def json_to_df(json_data):
     # create df with columns
-    df = pd.DataFrame(columns=["sport", "bookmaker", "bet type", "event date", "favorite", "underdog", "odds favorite", "odds underdog"])
+    df = pd.DataFrame(columns=["sport", "teams", "bookmaker", "bet type", "event date", "favorite", "underdog", "odds favorite", "odds underdog", "game_id"])
 
     for set in json_data:
         for event in set:
@@ -77,6 +77,14 @@ def json_to_df(json_data):
                             odds_favorite = outcomeOdds2
                             odds_underdog = outcomeOdds1
                         
+                        # create set of teams
+                        teams = {favorite, underdog}
+                        # sort teams to ensure consistency
+                        teams = "_".join(sorted(teams))
+                        
+                        # create id that is unique based on teams, date, bet type
+                        game_id = f"{teams}_{date}_{bet_type}"
+
                         # append to df
                         new_index = len(df)
                         df.loc[new_index] = {
@@ -87,7 +95,9 @@ def json_to_df(json_data):
                             "favorite": favorite,
                             "underdog": underdog,
                             "odds favorite": odds_favorite,
-                            "odds underdog": odds_underdog
+                            "odds underdog": odds_underdog,
+                            "teams": teams,
+                            "game_id": game_id
                         }
 
         return df   
