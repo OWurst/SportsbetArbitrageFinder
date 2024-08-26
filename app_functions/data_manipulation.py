@@ -100,4 +100,4 @@ def json_to_df(json_data):
                             "game_id": game_id
                         }
 
-        return df   
+    return df
