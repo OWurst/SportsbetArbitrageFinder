@@ -54,28 +54,21 @@ def get_odds_request(api_token, sport, bookmakers):
     } 
 
     try:
-        ############ modify this section to allow for debugging
-        # will save as file for now to avoid spamming the API
-        try:
-            with open(f"{sport}_odds.json", "r") as f:
-                odds = json.load(f)
 
-        except:
-            print("failure")
-            response = requests.get(url.format(sport=sport), params=params)
+        response = requests.get(url.format(sport=sport), params=params)
 
-            # if response code is unauthorized throw an error
-            if response.status_code == 401:
-                raise Exception("Unauthorized API key")
+        # if response code is unauthorized throw an error
+        if response.status_code == 401:
+            raise Exception("Unauthorized API key")
 
-            # save response to odds.json file
-            odds = response.json()
-            filename = f"{sport}_odds.json"
-            with open(filename, "w") as f:
-                json.dump(odds, f)
-        ################
+        odds = response.json()
 
         return odds
     
     except Exception as e:
         raise e
+
+def get_test_odds_request(filename):
+    with open(filename, "r") as f:
+        odds = json.load(f)
+    return odds

@@ -1,5 +1,6 @@
 import yaml
 import pandas as pd
+import json
 
 def read_config(build=False):
     # Load config file
@@ -101,3 +102,8 @@ def json_to_df(json_data):
                         }
 
     return df
+
+def save_json(data, filename):
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+    return
